@@ -1,89 +1,103 @@
-✅ Handling Variations in Data Formats and Units
-Real-world datasets, especially from different sources like MarketStack and Kaggle, often vary in format, units, and structure. The pipeline you built addresses these issues in multiple steps:
+# ETL Pipeline for Financial Stock Data Integration
 
-1. Date and Timestamp Normalization
-Problem: MarketStack and Kaggle datasets might have timestamps in different formats (datetime, string, with or without timezones).
+## 1. Introduction
 
-Solution:
+This project implements a complete ETL (Extract, Transform, Load) pipeline for integrating financial stock data from various sources including APIs, cloud storage, and databases. The goal is to unify diverse data formats, enrich them with derived metrics, and load the cleaned data into MongoDB for further analysis or visualization.
 
-standardize_timestamps() converts date columns to timezone-aware datetime objects using pd.to_datetime(..., utc=True).
+---
 
-Filters data to focus on the relevant year (2025), ensuring consistency and relevance.
+## 2. Objectives
 
-2. Column Name Standardization
-Problem: Inconsistent column naming due to formatting (spaces, capital letters).
+- To design and implement a robust ETL pipeline.
+- To extract stock data from multiple heterogeneous sources.
+- To clean, transform, and enrich the datasets.
+- To standardize and merge the data into a unified structure.
+- To load the final dataset into a MongoDB collection.
 
-Solution:
+---
 
-normalize_column_names() makes all column names lowercase and replaces spaces with underscores for uniformity.
+## 3. Data Sources
 
-3. Handling Missing or Corrupted Data
-Problem: Missing values can skew analysis or lead to runtime errors.
+| Source          | Type         | Description                                                                 |
+|-----------------|--------------|-----------------------------------------------------------------------------|
+| MarketStack API | API (mocked) | Fetches historical stock prices via public API or mock JSON endpoint.      |
+| Kaggle Dataset  | CSV via API  | Daily-updating world stock prices loaded using KaggleHub.                  |
+| Local CSV File  | CSV (local)  | Historical stock data from 2001 stored locally.                            |
+| MongoDB         | NoSQL DB     | Preloaded stock data in `BDA_Data.Stock` collection.                       |
+| GitHub CSV      | CSV (remote) | 2005 stock data hosted on GitHub repository (`main` branch).              |
 
-Solution:
+---
 
-check_for_null_values() identifies null columns in both datasets.
+## 4. Tools and Technologies
 
-handle_missing_values() fills or derives missing columns like capital_gains as needed.
+- **Python 3.x**
+- **Pandas** for data manipulation
+- **Requests** for API handling
+- **KaggleHub** for fetching Kaggle datasets
+- **PyMongo** for MongoDB integration
+- **Matplotlib / Seaborn** for optional visualizations
+- **GitHub Actions** for CI/CD pipeline automation
 
-4. Validating and Cleaning Financial Values
-Problem: Negative or invalid values in stock prices, volume, etc.
+---
 
-Solution:
+## 5. ETL Pipeline Design
 
-validate_data() removes rows where key numeric fields (open, close, volume, etc.) are negative.
+### 5.1 Extraction
 
-5. Harmonizing Feature Sets
-Problem: Some datasets may not contain calculated features like return or volatility.
+- Connects to each data source using its appropriate method.
+- For APIs, uses HTTP requests to retrieve JSON data.
+- For CSVs, uses `pandas.read_csv` directly or through KaggleHub.
+- For MongoDB, connects using `pymongo` and retrieves documents.
 
-Solution:
+### 5.2 Transformation
 
-add_features() adds daily_return = (close - open)/open and volatility = high - low for both datasets to ensure consistent analysis.
+- **Standardizes timestamps** and filters by relevant years.
+- **Normalizes column names** to lowercase and snake_case.
+- **Validates** data by removing negative financial entries.
+- **Handles missing values** and computes new features:
+  - `daily_return = (close - open) / open`
+  - `volatility = high - low`
+  - `capital_gains = close - open`
+- **Aggregates** data by symbol and date:
+  - Computes average open/close, max high, min low, total volume.
 
-6. Merging and Deduplication
-Problem: Different datasets might overlap in time or ticker coverage.
+### 5.3 Loading
 
-Solution:
+- Transformed data is loaded into a new MongoDB collection:  
+  **`BDA_Data.Stock_New`**
+- Timestamps are converted to BSON-compatible format before insertion.
 
-merge_datasets() combines both datasets and removes duplicates based on symbol + date.
+---
 
-📊 Using the Final DataFrame for Deeper Analysis
-After transformation, the resulting clean and enriched DataFrame is ideal for trend and pattern analysis in stock market behavior.
+## 6. CI/CD Pipeline (GitHub Actions)
 
-Here’s how:
+- Automatically triggers on every push to the `main` branch.
+- Steps:
+  1. Checkout repository.
+  2. Install Python dependencies.
+  3. Run ETL transformation and loading script.
 
-✅ Time-Series Analysis date_only allows easy grouping and visualization over time.
+---
 
-Analyze how each stock's open, close, or volume changed daily.
+## 7. Results
 
-✅ Volatility and Risk Insights Use the volatility feature to understand how risky or stable a stock is over time.
+- Final dataset contains clean, enriched, and unified stock data.
+- All records are timestamped and grouped by stock ticker.
+- Duplicate entries are removed using `(symbol, date_only)` pair.
+- Data ready for analytics or visual dashboards.
 
-Plot volatility spikes to identify key market events.
+---
 
-✅ Returns and Profitability daily_return helps detect high-performing stocks or downtrends.
+## 8. Conclusion
 
-Combine this with moving averages or cumulative returns to track investment performance.
+This ETL pipeline successfully demonstrates multi-source data integration, preprocessing, and cloud-based loading using Python. It serves as a scalable and extendable framework for financial data engineering tasks.
 
-✅ Volume-Based Insights volume helps detect surges in market interest or trading activity, which often precede price moves.
+---
 
-✅ Comparative Analysis Across Companies With consistent symbol and metrics, you can compare AAPL vs MSFT or other tickers on:
+## 9. Author
 
-Average daily return
+**Name:** Sufiyan  
+**MongoDB Cluster:** `BDA_Data`  
+**Branch:** `main`
 
-Price movement volatility
-
-Trading volume
-
-✅ Machine Learning & Forecasting Ready The cleaned DataFrame can directly feed into:
-
-Forecasting models (ARIMA, LSTM, Prophet)
-
-Classification (e.g., predicting up/down movement)
-
-Clustering (e.g., grouping similar stock behaviors)
-
-🔁 Example Use Cases: Investor Insight Dashboard: Daily returns and volume trends.
-
-Risk Assessment Tool: Monitor volatility of holdings.
-
-Backtesting Engine: Simulate trading strategies using historical open, close.
+---
