@@ -17,7 +17,7 @@ class ETLPipeline:
     """
 
     # API and configuration constants
-    ticker_url = 'https://gist.githubusercontent.com/rayyanali00/a311644d6d902100242345d1198a7a53/raw/tickers.json'
+    ticker_url = 'https://gist.githubusercontent.com/SufiyanDS049/38188ac53b3d4b265efc4e4efaf99b1f/raw/58975d091bdc26ff0b7af218ec6bea62ab8fa0d2/tickers.json'
     marketstack_baseapiurl = 'https://api.marketstack.com/v2/eod?access_key=580c67effd676378137d18d392f35603'
     marketstack_apiurlgist = 'https://gist.githubusercontent.com/rayyanali00/ec7fa991d7bb93d51a786ae811563ebc/raw/marketstack_stockdata.json'
     datefrom = '2025-03-01'
