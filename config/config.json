@@ -1,0 +1,3 @@
+mongoclient = MongoClient('mongodb+srv://sufiyan96:bscs2016@cluster0.nnspm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+        db = mongoclient['BDA_Data']
+        collection = db['Stock']

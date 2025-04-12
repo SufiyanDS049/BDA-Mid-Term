@@ -1,73 +1,89 @@
-# BDA-Mid-Term.
-# Financial Stock Data ETL Pipeline
+✅ Handling Variations in Data Formats and Units
+Real-world datasets, especially from different sources like MarketStack and Kaggle, often vary in format, units, and structure. The pipeline you built addresses these issues in multiple steps:
 
-This project implements an ETL (Extract, Transform, Load) pipeline for collecting, transforming, analyzing, and loading financial stock data from multiple data sources, including MarketStack API, Kaggle datasets, local CSV files, MongoDB, and GitHub.
+1. Date and Timestamp Normalization
+Problem: MarketStack and Kaggle datasets might have timestamps in different formats (datetime, string, with or without timezones).
 
-## Table of Contents
+Solution:
 
-1. [Project Overview](#project-overview)
-2. [Technology Stack](#technology-stack)
-3. [How It Works](#how-it-works)
-4. [Features](#features)
-5. [Getting Started](#getting-started)
-6. [Usage](#usage)
-7. [License](#license)
+standardize_timestamps() converts date columns to timezone-aware datetime objects using pd.to_datetime(..., utc=True).
 
-## Project Overview
+Filters data to focus on the relevant year (2025), ensuring consistency and relevance.
 
-The goal of this pipeline is to automate the collection, cleaning, transformation, and aggregation of financial stock data. Data is sourced from:
+2. Column Name Standardization
+Problem: Inconsistent column naming due to formatting (spaces, capital letters).
 
-- **MarketStack API**: Fetches historical stock data based on tickers.
-- **Kaggle Dataset**: Loads daily-updating stock price data from Kaggle.
-- **Local CSV File**: Uses locally stored stock data for processing.
-- **MongoDB**: Retrieves stock data stored in a MongoDB collection.
-- **GitHub**: Reads CSV data hosted on GitHub.
+Solution:
 
-After data is collected, it is processed, cleaned, and aggregated by symbol and date. The transformed data is then loaded into a MongoDB database for further analysis.
+normalize_column_names() makes all column names lowercase and replaces spaces with underscores for uniformity.
 
-## Technology Stack
+3. Handling Missing or Corrupted Data
+Problem: Missing values can skew analysis or lead to runtime errors.
 
-- **Python**: Core language used for implementing the ETL pipeline.
-- **Pandas**: Used for data manipulation, cleaning, and transformation.
-- **Requests**: Used for making API requests to external services (MarketStack API).
-- **MongoDB**: NoSQL database used to store the processed stock data.
-- **Kaggle API**: For loading datasets from Kaggle (via KaggleHub).
-- **PyMongo**: MongoDB client for interacting with the MongoDB database.
-- **Schedule Library (optional)**: For scheduling periodic ETL tasks.
-  
-## How It Works
+Solution:
 
-The pipeline follows a typical ETL (Extract, Transform, Load) pattern:
+check_for_null_values() identifies null columns in both datasets.
 
-1. **Extract**:
-   - Data is extracted from various sources such as APIs (MarketStack), Kaggle, local CSV files, MongoDB, and GitHub.
-   
-2. **Transform**:
-   - The data is cleaned and transformed:
-     - Timestamps are standardized.
-     - Missing values are handled.
-     - Invalid data is filtered out.
-     - Features such as `capital_gains`, `daily_return`, and `volatility` are engineered.
-     - Data is aggregated by ticker symbol and date.
-   
-3. **Load**:
-   - The transformed data is loaded into a MongoDB database.
+handle_missing_values() fills or derives missing columns like capital_gains as needed.
 
-## Features
+4. Validating and Cleaning Financial Values
+Problem: Negative or invalid values in stock prices, volume, etc.
 
-- **Multiple Data Connectors**: The pipeline connects to multiple data sources, including APIs, local files, MongoDB, and GitHub.
-- **Data Cleaning**: Handles missing values, invalid data, and standardizes timestamps across datasets.
-- **Feature Engineering**: Adds meaningful features such as daily returns, capital gains, and volatility.
-- **Aggregation**: Aggregates data by symbol and date to calculate financial metrics.
-- **Database Integration**: Loads processed data into a MongoDB database for further analysis or reporting.
-- **Flexible Configuration**: The pipeline supports flexible date ranges and can be easily adjusted to pull more or fewer tickers.
+Solution:
 
-## Getting Started
+validate_data() removes rows where key numeric fields (open, close, volume, etc.) are negative.
 
-To get started, clone the repository and install the necessary dependencies.
+5. Harmonizing Feature Sets
+Problem: Some datasets may not contain calculated features like return or volatility.
 
-### Clone the Repository
+Solution:
 
-```bash
-git clone https://github.com/yourusername/etl-stock-data.git
-cd etl-stock-data
+add_features() adds daily_return = (close - open)/open and volatility = high - low for both datasets to ensure consistent analysis.
+
+6. Merging and Deduplication
+Problem: Different datasets might overlap in time or ticker coverage.
+
+Solution:
+
+merge_datasets() combines both datasets and removes duplicates based on symbol + date.
+
+📊 Using the Final DataFrame for Deeper Analysis
+After transformation, the resulting clean and enriched DataFrame is ideal for trend and pattern analysis in stock market behavior.
+
+Here’s how:
+
+✅ Time-Series Analysis date_only allows easy grouping and visualization over time.
+
+Analyze how each stock's open, close, or volume changed daily.
+
+✅ Volatility and Risk Insights Use the volatility feature to understand how risky or stable a stock is over time.
+
+Plot volatility spikes to identify key market events.
+
+✅ Returns and Profitability daily_return helps detect high-performing stocks or downtrends.
+
+Combine this with moving averages or cumulative returns to track investment performance.
+
+✅ Volume-Based Insights volume helps detect surges in market interest or trading activity, which often precede price moves.
+
+✅ Comparative Analysis Across Companies With consistent symbol and metrics, you can compare AAPL vs MSFT or other tickers on:
+
+Average daily return
+
+Price movement volatility
+
+Trading volume
+
+✅ Machine Learning & Forecasting Ready The cleaned DataFrame can directly feed into:
+
+Forecasting models (ARIMA, LSTM, Prophet)
+
+Classification (e.g., predicting up/down movement)
+
+Clustering (e.g., grouping similar stock behaviors)
+
+🔁 Example Use Cases: Investor Insight Dashboard: Daily returns and volume trends.
+
+Risk Assessment Tool: Monitor volatility of holdings.
+
+Backtesting Engine: Simulate trading strategies using historical open, close.
