@@ -2,6 +2,4 @@ requests
 pandas
 kagglehub
 pymongo
-matplotlib
-seaborn
 schedule

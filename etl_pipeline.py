@@ -3,9 +3,6 @@ import pandas as pd
 import kagglehub
 from kagglehub import KaggleDatasetAdapter
 from pymongo import MongoClient
-import matplotlib.pyplot as plt
-import seaborn as sns
-from google.colab import files
 import schedule
 import time
 
@@ -19,7 +16,7 @@ class ETLPipeline:
     # API and configuration constants
     ticker_url = 'https://gist.githubusercontent.com/SufiyanDS049/38188ac53b3d4b265efc4e4efaf99b1f/raw/58975d091bdc26ff0b7af218ec6bea62ab8fa0d2/tickers.json'
     marketstack_baseapiurl = 'https://api.marketstack.com/v2/eod?access_key=580c67effd676378137d18d392f35603'
-    marketstack_apiurlgist = 'https://gist.githubusercontent.com/rayyanali00/ec7fa991d7bb93d51a786ae811563ebc/raw/marketstack_stockdata.json'
+    marketstack_apiurlgist = 'https://gist.githubusercontent.com/SufiyanDS049/78a23e2a5be5f9113ed44dcc71172098/raw/9a152deca2c51a4a5c460e7bb1d0c4896a44ce43/marketstack_stockdata.json'
     datefrom = '2025-03-01'
     dateto = '2025-04-01'
     IS_MOCK = True
