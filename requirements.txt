@@ -1,10 +1,8 @@
-import requests
-import pandas as pd
-import kagglehub
-from kagglehub import KaggleDatasetAdapter
-from pymongo import MongoClient
-import matplotlib.pyplot as plt
-import seaborn as sns
-from google.colab import files
-import schedule
-import time
+requests
+pandas
+kagglehub
+pymongo
+matplotlib
+seaborn
+schedule
+time
