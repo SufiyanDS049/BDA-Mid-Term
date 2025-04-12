@@ -113,19 +113,32 @@ class ETLPipeline:
         kaggle_df = self.get_data_from_kaggle_df()
         local_csv = self.get_data_from_local_csv()
         mongo_db = self.get_data_from_mongodb()
+        github = self.get_data_from_github()
 
         marketstack_nulls = marketstack_df.isnull().sum()
         kaggle_nulls = kaggle_df.isnull().sum()
+        local_nulls = local_csv.isnull().sum()
+        mongo_nulls = mongo_db.isnull().sum()
+        github_nulls = github.isnull().sum()
 
         marketstack_null_cols = {col: count for col, count in marketstack_nulls.items() if count > 0}
         kaggle_null_cols = {col: count for col, count in kaggle_nulls.items() if count > 0}
+        local_null_cols = {col: count for col, count in local_nulls.items() if count > 0}
+        mongo_null_cols = {col: count for col, count in mongo_nulls.items() if count > 0}
+        github_null_cols = {col: count for col, count in github_nulls.items() if count > 0}
 
         print("Null values in MarketStack DataFrame:", marketstack_null_cols)
         print("Null values in Kaggle DataFrame:", kaggle_null_cols)
+        print("Null values in Local csv DataFrame:", local_null_cols)
+        print("Null values in MongoDb DataFrame:", mongo_null_cols)
+        print("Null values in Github DataFrame:", github_null_cols)
 
         return {
             "marketstack_nulls": marketstack_null_cols,
-            "kaggle_nulls": kaggle_null_cols
+            "kaggle_nulls": kaggle_null_cols,
+            "local_nulls": local_null_cols,
+            "mongo_nulls": mongo_null_cols,
+            "github_nulls": github_null_cols
         }
 
     def handle_missing_values(self, kaggle_df):
