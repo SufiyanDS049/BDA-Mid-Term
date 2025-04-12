@@ -24,4 +24,4 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run ETL Pipeline
-      run: python run_pipeline.py
+      run: python etl_pipeline.py
